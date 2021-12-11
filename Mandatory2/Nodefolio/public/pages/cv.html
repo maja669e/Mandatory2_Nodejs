@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.1/html2pdf.bundle.min.js"></script>
+    <title>CV</title>
+</head>
+
+<body>
+
+    <div id="invoice">
+        <h1>CV</h1>
+        <p>about me blablblbalak</p>
+    </div>
+
+    <button id="download">Download pdf</button>
+
+
+</body>
+
+<script>
+    window.onload = function(){
+    document.getElementById("download")
+    .addEventListener("click", ()=>{
+    const invoice = this.document.getElementById("invoice");
+    html2pdf().from(invoice).save();
+    })
+}
+</script>
+
+</html>
