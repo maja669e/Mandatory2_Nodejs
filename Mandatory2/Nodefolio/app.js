@@ -1,6 +1,10 @@
-if(process.env.NODE_ENV !== 'production'){
+if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
+
+const sequelize = require('./database/database');
+sequelize.sync().then(() => console.log('db is ready'));
+const Project = require('./database/Project')
 
 const express = require("express");
 const app = express();
@@ -12,7 +16,7 @@ const passport = require('passport');
 
 const initializePassport = require('./passport-config');
 initializePassport(
-    passport, 
+    passport,
     email => users.find(user => user.email === email),
     id => users.find(user => user.id === id)
 );
@@ -24,6 +28,7 @@ app.use(express.static("public"));
 
 
 app.use(express.json());
+
 app.use(express.urlencoded({
     extended: true
 }));
@@ -85,9 +90,9 @@ app.use(express.urlencoded({
 }));
 
 app.post('/admin', passport.authenticate('local', {
-succesRedirect: '/dashboards',
-failureRedirect: '/admin',
-failureFlash: true
+    succesRedirect: '/dashboards',
+    failureRedirect: '/admin',
+    failureFlash: true
 
 }));
 
@@ -138,10 +143,44 @@ app.get("/projects", (req, res) => {
     res.send(projectsPage);
 });
 
+app.get("/projects", async (req, res) => {
+    const projects = await Project.findAll();
+    res.send(projects);
+});
+
+
+app.put('/projects/:id', async (req, res) => {
+    const requestedId = req.params.id;
+    const project = await Project.findOne({
+        where: {
+            id: requestedId
+        }
+    });
+    project.name = req.body.name;
+    await project.save();
+    res.send('updated');
+});
+
+app.delete('/projects/:id', async (req, res) => {
+    const requestedId = req.params.id;
+    await Project.destroy({
+        where: {
+            id: requestedId
+        }
+    });
+    res.send('removed');
+})
+
+
+app.post('/projects', async (req, res) => {
+    await Project.create(req.body);
+    res.send('project is inserted');
+});
+
 
 
 function checkAuthenticated(req, res, next) {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         return next()
     }
 
